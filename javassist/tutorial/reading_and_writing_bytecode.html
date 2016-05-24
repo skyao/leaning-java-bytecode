@@ -1,0 +1,405 @@
+<!DOCTYPE HTML>
+<html lang="en-US" >
+    
+    <head>
+        
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=11; IE=10; IE=9; IE=8; IE=7; IE=EDGE" />
+        <title>读写字节码 | Leaning Java Bytecode</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 1.5.0">
+        <meta name="HandheldFriendly" content="true"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+        <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+        
+        
+    
+    
+    <link rel="next" href="../../javassist/tutorial/classpool.html" />
+    
+    
+    <link rel="prev" href="../../javassist/tutorial/index.html" />
+    
+
+        
+    </head>
+    <body>
+        
+        
+<link rel="stylesheet" href="../../gitbook/style.css">
+
+
+        
+    <div class="book" data-level="2.1.1" data-basepath="../.." data-revision="1464049900053">
+    
+
+<div class="book-summary">
+    <div class="book-search">
+        <input type="text" placeholder="Type to search" class="form-control" />
+    </div>
+    <ul class="summary">
+        
+    	
+    	
+    	    
+            <li>
+                <a href="http://skyao.github.io/" target="blank" class="custom-link">Sky&#39;s Blog</a>
+            </li>
+    	
+    	
+
+        
+        <li class="divider"></li>
+        
+
+        
+    
+        
+        <li class="chapter " data-level="0" data-path="index.html">
+            
+                
+                    <a href="../../index.html">
+                        <i class="fa fa-check"></i>
+                        
+                         Introduction
+                    </a>
+                
+            
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="1" data-path="introduction/index.html">
+            
+                
+                    <a href="../../introduction/index.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>1.</b>
+                        
+                         介绍
+                    </a>
+                
+            
+            
+            <ul class="articles">
+                
+    
+        
+        <li class="chapter " data-level="1.1" data-path="introduction/information.html">
+            
+                
+                    <a href="../../introduction/information.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>1.1.</b>
+                        
+                         资料收集整理
+                    </a>
+                
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="2" data-path="javassist/index.html">
+            
+                
+                    <a href="../../javassist/index.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.</b>
+                        
+                         Javassist
+                    </a>
+                
+            
+            
+            <ul class="articles">
+                
+    
+        
+        <li class="chapter " data-level="2.1" data-path="javassist/tutorial/index.html">
+            
+                
+                    <a href="../../javassist/tutorial/index.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.</b>
+                        
+                         教程(翻译)
+                    </a>
+                
+            
+            
+            <ul class="articles">
+                
+    
+        
+        <li class="chapter active" data-level="2.1.1" data-path="javassist/tutorial/reading_and_writing_bytecode.html">
+            
+                
+                    <a href="../../javassist/tutorial/reading_and_writing_bytecode.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.1.</b>
+                        
+                         读写字节码
+                    </a>
+                
+            
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="2.1.2" data-path="javassist/tutorial/classpool.html">
+            
+                
+                    <a href="../../javassist/tutorial/classpool.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.2.</b>
+                        
+                         ClassPool
+                    </a>
+                
+            
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="2.1.3" data-path="javassist/tutorial/classloader.html">
+            
+                
+                    <a href="../../javassist/tutorial/classloader.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.3.</b>
+                        
+                         Class Loader
+                    </a>
+                
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+
+        
+        <li class="divider"></li>
+        <li>
+            <a href="http://www.gitbook.io/" target="blank" class="gitbook-link">Published using GitBook</a>
+        </li>
+        
+    </ul>
+</div>
+
+    <div class="book-body">
+        <div class="body-inner">
+            <div class="book-header">
+    <!-- Actions Left -->
+    <a href="#" class="btn pull-left toggle-summary" aria-label="Toggle summary"><i class="fa fa-align-justify"></i></a>
+    <a href="#" class="btn pull-left toggle-search" aria-label="Toggle search"><i class="fa fa-search"></i></a>
+    
+    <div id="font-settings-wrapper" class="dropdown pull-left">
+        <a href="#" class="btn toggle-dropdown" aria-label="Toggle font settings"><i class="fa fa-font"></i>
+        </a>
+        <div class="dropdown-menu font-settings">
+    <div class="dropdown-caret">
+        <span class="caret-outer"></span>
+        <span class="caret-inner"></span>
+    </div>
+
+    <div class="buttons">
+        <button type="button" id="reduce-font-size" class="button size-2">A</button>
+        <button type="button" id="enlarge-font-size" class="button size-2">A</button>
+    </div>
+
+    <div class="buttons font-family-list">
+        <button type="button" data-font="0" class="button">Serif</button>
+        <button type="button" data-font="1" class="button">Sans</button>
+    </div>
+
+    <div class="buttons color-theme-list">
+        <button type="button" id="color-theme-preview-0" class="button size-3" data-theme="0">White</button>
+        <button type="button" id="color-theme-preview-1" class="button size-3" data-theme="1">Sepia</button>
+        <button type="button" id="color-theme-preview-2" class="button size-3" data-theme="2">Night</button>
+    </div>
+</div>
+
+    </div>
+
+    <!-- Actions Right -->
+    
+    <div class="dropdown pull-right">
+        <a href="#" class="btn toggle-dropdown" aria-label="Toggle share dropdown"><i class="fa fa-share-alt"></i>
+        </a>
+        <div class="dropdown-menu font-settings dropdown-left">
+            <div class="dropdown-caret">
+                <span class="caret-outer"></span>
+                <span class="caret-inner"></span>
+            </div>
+            <div class="buttons">
+                <button type="button" data-sharing="twitter" class="button">Twitter</button>
+                <button type="button" data-sharing="google-plus" class="button">Google</button>
+                <button type="button" data-sharing="facebook" class="button">Facebook</button>
+                <button type="button" data-sharing="weibo" class="button">Weibo</button>
+                <button type="button" data-sharing="instapaper" class="button">Instapaper</button>
+            </div>
+        </div>
+    </div>
+    
+
+    
+    <a href="#" target="_blank" class="btn pull-right google-plus-sharing-link sharing-link" data-sharing="google-plus" aria-label="Share on Google Plus"><i class="fa fa-google-plus"></i></a>
+    
+    
+    <a href="#" target="_blank" class="btn pull-right facebook-sharing-link sharing-link" data-sharing="facebook" aria-label="Share on Facebook"><i class="fa fa-facebook"></i></a>
+    
+    
+    <a href="#" target="_blank" class="btn pull-right twitter-sharing-link sharing-link" data-sharing="twitter" aria-label="Share on Twitter"><i class="fa fa-twitter"></i></a>
+    
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../../" >Leaning Java Bytecode</a>
+    </h1>
+</div>
+
+            <div class="page-wrapper" tabindex="-1">
+                <div class="page-inner">
+                
+                
+                    <section class="normal" id="section-gitbook_8">
+                    
+                        <h1 id="">读写字节码</h1>
+<p>Javasist是一个用来处理java字节码的类库。Java字节码存储在被成为class文件的二进制文件中。每个class文件包含一个java类或者接口。</p>
+<p>类 <code>Javassist.CtClass</code> 是class文件的抽象表示。CtClass(compile-time class/编译时类)对象是处理class文件的把手。下面的程序是一个非常简单的例子：</p>
+<pre><code class="lang-java">ClassPool pool = ClassPool.getDefault();
+CtClass cc = pool.get(<span class="hljs-string">"test.Rectangle"</span>);
+cc.setSuperclass(pool.get(<span class="hljs-string">"test.Point"</span>));
+cc.writeFile();
+</code></pre>
+<p>这个程序首先获得一个 ClassPool 对象， 它控制Javassist的字节码修改。ClassPool 对象是 CtClass 对象的容器，CtClass对象代表一个类文件。它在需要时读取class文件来构建 CtClass 对象并记录构建好的对象来响应后续的访问。为了修改类的定义，用户必须首先从 ClassPool 对象中获取代表这个类的 CtClass 对象的引用。ClassPool中的get()方法用于这个目的。如上面程序展示的案例中， 代表类 <code>test.Rectangle</code>的CtClass 对象是从 ClassPool 对象中获取并被赋值给变量 cc。getDefault()方法返回的 ClassPool 对象搜索默认系统搜索路径。</p>
+<p>从实现的观点， ClassPool 是 CtClass 对象的hash table， 使用类名作为key。ClassPool 中的get()方法搜索这个hash table来查找对应指定key的 CtClass 对象。如果没有找到这样的 CtClass 对象，get()方法读取类文件来构建新的 CtClass 对象，记录在hash table中并随即作为get()方法的结果返回。</p>
+<p>从 ClassPool 对象获取的 CtClass 对象可以被修改(如何修改CtClass的细节将在后面描述)。在上面的例子中，类被修改，test.Rectangle 的超类被修改为类 test.Point 。这个修改在CtClass中的writeFile()方法被最终调用时反应到原始类文件中。</p>
+<p>writeFile()方法将 CtClass 对象转换为类文件并将它写到本地磁盘。Javassist也提供直接获取修改后的字节码的方法。为了获得这些字节码， 请调用toBytecode()：</p>
+<pre><code class="lang-java"><span class="hljs-keyword">byte</span>[] b = cc.toBytecode();
+</code></pre>
+<p>你也可以这样直接装载 CtClass ：</p>
+<pre><code class="lang-java">Class clazz = cc.toClass();
+</code></pre>
+<p>toClass() 要求当前线程的上下文类装载器(context class loader)去装载CtClass表示的类文件。它返回一个代表被装载的类的 java.lang.Class 对象。更多细节，请见下面的章节。</p>
+<h2 id="">定义一个新的类</h2>
+<p>为了从头开始定义一个新类，必须在 ClassPool 上调用 makeClass() 方法。</p>
+<pre><code class="lang-java">ClassPool pool = ClassPool.getDefault();
+CtClass cc = pool.makeClass(<span class="hljs-string">"Point"</span>);
+</code></pre>
+<p>这个程序定义了一个不包含任何成员的类 Point 。</p>
+<p>This program defines a class Point including no members. Member methods of Point can be created with factory methods declared in CtNewMethod and appended to Point with addMethod() in CtClass.</p>
+<p>makeClass() cannot create a new interface; makeInterface() in ClassPool can do. Member methods in an interface can be created with abstractMethod() in CtNewMethod. Note that an interface method is an abstract method.</p>
+<p>Frozen classes</p>
+<p>If a CtClass object is converted into a class file by writeFile(), toClass(), or toBytecode(), Javassist freezes that CtClass object. Further modifications of that CtClass object are not permitted. This is for warning the developers when they attempt to modify a class file that has been already loaded since the JVM does not allow reloading a class.</p>
+<p>A frozen CtClass can be defrost so that modifications of the class definition will be permitted. For example,</p>
+<p>CtClasss cc = ...;
+    :
+cc.writeFile();
+cc.defrost();
+cc.setSuperclass(...);    // OK since the class is not frozen.
+After defrost() is called, the CtClass object can be modified again.</p>
+<p>If ClassPool.doPruning is set to true, then Javassist prunes the data structure contained in a CtClass object when Javassist freezes that object. To reduce memory consumption, pruning discards unnecessary attributes (attribute_info structures) in that object. For example, Code_attribute structures (method bodies) are discarded. Thus, after a CtClass object is pruned, the bytecode of a method is not accessible except method names, signatures, and annotations. The pruned CtClass object cannot be defrost again. The default value of ClassPool.doPruning is false.</p>
+<p>To disallow pruning a particular CtClass, stopPruning() must be called on that object in advance:</p>
+<p>CtClasss cc = ...;
+cc.stopPruning(true);
+    :
+cc.writeFile();                             // convert to a class file.
+// cc is not pruned.
+The CtClass object cc is not pruned. Thus it can be defrost after writeFile() is called.</p>
+<p>Note: While debugging, you might want to temporarily stop pruning and freezing and write a modified class file to a disk drive. debugWriteFile() is a convenient method for that purpose. It stops pruning, writes a class file, defrosts it, and turns pruning on again (if it was initially on).
+Class search path</p>
+<p>The default ClassPool returned by a static method ClassPool.getDefault() searches the same path that the underlying JVM (Java virtual machine) has. If a program is running on a web application server such as JBoss and Tomcat, the ClassPool object may not be able to find user classes since such a web application server uses multiple class loaders as well as the system class loader. In that case, an additional class path must be registered to the ClassPool. Suppose that pool refers to a ClassPool object:</p>
+<p>pool.insertClassPath(new ClassClassPath(this.getClass()));
+This statement registers the class path that was used for loading the class of the object that this refers to. You can use any Class object as an argument instead of this.getClass(). The class path used for loading the class represented by that Class object is registered.</p>
+<p>You can register a directory name as the class search path. For example, the following code adds a directory /usr/local/javalib to the search path:</p>
+<p>ClassPool pool = ClassPool.getDefault();
+pool.insertClassPath(&quot;/usr/local/javalib&quot;);
+The search path that the users can add is not only a directory but also a URL:</p>
+<p>ClassPool pool = ClassPool.getDefault();
+ClassPath cp = new URLClassPath(&quot;www.javassist.org&quot;, 80, &quot;/java/&quot;, &quot;org.javassist.&quot;);
+pool.insertClassPath(cp);
+This program adds &quot;<a href="http://www.javassist.org:80/java/" target="_blank">http://www.javassist.org:80/java/</a>&quot; to the class search path. This URL is used only for searching classes belonging to a package org.javassist. For example, to load a class org.javassist.test.Main, its class file will be obtained from:</p>
+<p><a href="http://www.javassist.org:80/java/org/javassist/test/Main.class" target="_blank">http://www.javassist.org:80/java/org/javassist/test/Main.class</a>
+Furthermore, you can directly give a byte array to a ClassPool object and construct a CtClass object from that array. To do this, use ByteArrayClassPath. For example,</p>
+<p>ClassPool cp = ClassPool.getDefault();
+byte[] b = a byte array;
+String name = class name;
+cp.insertClassPath(new ByteArrayClassPath(name, b));
+CtClass cc = cp.get(name);
+The obtained CtClass object represents a class defined by the class file specified by b. The ClassPool reads a class file from the given ByteArrayClassPath if get() is called and the class name given to get() is equal to one specified by name.</p>
+<p>If you do not know the fully-qualified name of the class, then you can use makeClass() in ClassPool:</p>
+<p>ClassPool cp = ClassPool.getDefault();
+InputStream ins = an input stream for reading a class file;
+CtClass cc = cp.makeClass(ins);
+makeClass() returns the CtClass object constructed from the given input stream. You can use makeClass() for eagerly feeding class files to the ClassPool object. This might improve performance if the search path includes a large jar file. Since a ClassPool object reads a class file on demand, it might repeatedly search the whole jar file for every class file. makeClass() can be used for optimizing this search. The CtClass constructed by makeClass() is kept in the ClassPool object and the class file is never read again.</p>
+<p>The users can extend the class search path. They can define a new class implementing ClassPath interface and give an instance of that class to insertClassPath() in ClassPool. This allows a non-standard resource to be included in the search path.</p>
+
+                    
+                    </section>
+                
+                
+                </div>
+            </div>
+        </div>
+
+        
+        <a href="../../javassist/tutorial/index.html" class="navigation navigation-prev " aria-label="Previous page: 教程(翻译)"><i class="fa fa-angle-left"></i></a>
+        
+        
+        <a href="../../javassist/tutorial/classpool.html" class="navigation navigation-next " aria-label="Next page: ClassPool"><i class="fa fa-angle-right"></i></a>
+        
+    </div>
+</div>
+
+        
+<script src="../../gitbook/app.js"></script>
+
+    
+    <script src="https://cdn.mathjax.org/mathjax/2.4-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+    
+    <script src="../../gitbook/plugins/gitbook-plugin-mathjax/plugin.js"></script>
+    
+
+<script>
+require(["gitbook"], function(gitbook) {
+    var config = {"fontSettings":{"theme":null,"family":"sans","size":2}};
+    gitbook.start(config);
+});
+</script>
+
+        
+    </body>
+    
+</html>
